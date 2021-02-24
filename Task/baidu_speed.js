@@ -1,5 +1,5 @@
 /*
-更新时间:2021-02-12 22:50
+更新时间:2021-02-14 19:10
 百度极速版签到任务，使用脚本有黑号严重，请谨慎使用‼️
 
 赞赏:百度极速邀请码`RW9ZSW 点击链接立得红包，最高100元！https://dwz.cn/Oilv4CJ1`,农妇山泉 -> 有点咸，万分感谢
@@ -45,7 +45,6 @@ if ($.isNode()) {
   } else {
   BDCASH = [process.env.BAIDU_CASH]
   }
-   console.log(`============ 脚本执行-北京时间(UTC+8)：${new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toLocaleString()}  =============\n`);
 } else if (!$.isNode()&&baiducks && baiducks.indexOf('&')>-1){
   BDCookie = baiducks.split("&")
   BDCASH = [baiducash]
@@ -69,6 +68,10 @@ if ($.isNode()) {
     console.log($.name, '【提示】请把百度Cookie填入Github 的 Secrets 中，请以&或者换行隔开');
     return
   };
+    timeZone = new Date().getTimezoneOffset() / 60;
+    timestamp = Date.now()+ (8+timeZone) * 60 * 60 * 1000;
+    bjTime = new Date(timestamp).toLocaleString('zh',{hour12:false,timeZoneName: 'long'});
+    console.log(`\n === 脚本执行 ${bjTime} ===\n`);
   for (let i = 0; i < CookieArr.length; i++) {
     if (CookieArr[i]) {
       cookieval = CookieArr[i];
@@ -213,9 +216,12 @@ function coinexChange() {
 function TaskCenter() {
   return new Promise((resolve, reject) =>{
     $.get(confApi('h5/vaultnew?productid=2&fromcsr=1&system=ios&_format=json'), async(error, resp, data) =>{
-      try {
+     try {
         let get_tasks = JSON.parse(data);
-       if(get_tasks.data.uname!=""&&CookieArr.length==1){
+      if(get_tasks.errno==7){
+      $.msg($.name, get_tasks.msg, "请更换Cookie后，重试");
+      return
+     } else if(get_tasks.data.uname!=""&&CookieArr.length==1){
         username = get_tasks.data.uname;
         $.setdata(username,'baidu_nick')
         }
